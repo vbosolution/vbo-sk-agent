@@ -19,6 +19,7 @@ file_loaded(__FILE__)
 #
 # v1.0.1 (2026-04-17)
 # - Added OpenAI Codex support (AGENTS.md config)
+# - Added agent-driven auto-update check (agent reads GitHub releases, advises user, can hot-reload)
 # - Fixed encoding in templates (em dash -> ASCII, prevents display issues)
 # - Updated README: Quick Start matches dashboard, added Beyond Coding section
 # - Updated GitHub links in dashboard
