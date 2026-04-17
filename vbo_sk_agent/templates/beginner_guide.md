@@ -1,4 +1,4 @@
-# VBO SkAgent — Beginner Guide
+# VBO SkAgent -- Beginner Guide
 
 Step-by-step prompts to build your first SketchUp plugin with AI.
 Just copy a prompt, replace the `[BRACKETS]` with your own description, and paste it into your AI tool.
@@ -7,13 +7,13 @@ Just copy a prompt, replace the `[BRACKETS]` with your own description, and past
 
 ## Step 0: Quick POC (Proof of Concept)
 
-> Use when: You have a simple idea and want to test if it's even possible — before creating a full plugin.
+> Use when: You have a simple idea and want to test if it's even possible -- before creating a full plugin.
 
 ```
-I want to try something: [DESCRIBE YOUR IDEA — e.g. "select all faces larger than 10m² and color them red"].
+I want to try something: [DESCRIBE YOUR IDEA -- e.g. "select all faces larger than 10m² and color them red"].
 
 Can you prototype this directly via command.rb first?
-Don't create a full plugin yet — just run it as a quick test in SketchUp.
+Don't create a full plugin yet -- just run it as a quick test in SketchUp.
 If it works, we'll turn it into a proper plugin later.
 ```
 
@@ -27,7 +27,7 @@ If it works, we'll turn it into a proper plugin later.
 
 ```
 I want to create a new SketchUp plugin called "[YOUR PLUGIN NAME]".
-It should: [SHORT DESCRIPTION — e.g. "draw a 3D pipe between two points"]
+It should: [SHORT DESCRIPTION -- e.g. "draw a 3D pipe between two points"]
 
 Please:
 1. Create the folder structure in the Plugins directory
@@ -45,15 +45,15 @@ Please:
 
 ```
 I want my plugin "[YOUR PLUGIN NAME]" to do the following:
-- [Feature 1 — e.g. "Let user click two points to draw a pipe"]
-- [Feature 2 — e.g. "Show a dialog to pick pipe diameter"]
-- [Feature 3 — e.g. "Calculate total pipe length"]
+- [Feature 1 -- e.g. "Let user click two points to draw a pipe"]
+- [Feature 2 -- e.g. "Show a dialog to pick pipe diameter"]
+- [Feature 3 -- e.g. "Calculate total pipe length"]
 
 Please create a development plan:
 1. Break this into phases (start simple, add features gradually)
 2. List the files needed and what each file does
 3. Identify which SketchUp API classes I'll need
-4. Start with Phase 1 only — we'll do the rest later
+4. Start with Phase 1 only -- we'll do the rest later
 ```
 
 ---
@@ -64,12 +64,12 @@ Please create a development plan:
 
 ```
 Let's implement Phase 1 of "[YOUR PLUGIN NAME]":
-[DESCRIBE PHASE 1 — e.g. "User activates the tool, clicks two points, a line is drawn between them"]
+[DESCRIBE PHASE 1 -- e.g. "User activates the tool, clicks two points, a line is drawn between them"]
 
 Please:
 1. Write the code for this phase
 2. Load it into SketchUp via the bridge
-3. Test it — run a quick check to confirm it loaded without errors
+3. Test it -- run a quick check to confirm it loaded without errors
 4. Tell me what to do in SketchUp to test it manually (what to click, what to expect)
 ```
 
@@ -81,7 +81,7 @@ Please:
 
 ```
 I tested [WHAT YOU DID] and got this problem:
-[DESCRIBE THE ISSUE — e.g. "nothing happens when I click" or "I see an error in the console"]
+[DESCRIBE THE ISSUE -- e.g. "nothing happens when I click" or "I see an error in the console"]
 
 Please:
 1. Inspect the current code
@@ -91,11 +91,11 @@ Please:
 5. Run the test again to confirm the fix works
 
 IMPORTANT: Maximum 3 retry attempts. If still failing after 3 tries,
-stop and explain what's wrong — do NOT keep retrying.
+stop and explain what's wrong -- do NOT keep retrying.
 Show me the code before running anything that modifies the model.
 ```
 
-**Warning:** Always set a retry limit. Without one, AI may keep retrying and corrupt your model. If AI can't fix it in 3 tries, the problem likely needs a different approach — let AI explain the issue so you can decide together.
+**Warning:** Always set a retry limit. Without one, AI may keep retrying and corrupt your model. If AI can't fix it in 3 tries, the problem likely needs a different approach -- let AI explain the issue so you can decide together.
 
 ---
 
@@ -105,9 +105,9 @@ Show me the code before running anything that modifies the model.
 
 ```
 Add a dialog to "[YOUR PLUGIN NAME]" that lets the user:
-- [Input 1 — e.g. "Enter pipe diameter (default: 50mm)"]
-- [Input 2 — e.g. "Choose material from a dropdown"]
-- [Button — e.g. "Click OK to apply"]
+- [Input 1 -- e.g. "Enter pipe diameter (default: 50mm)"]
+- [Input 2 -- e.g. "Choose material from a dropdown"]
+- [Button -- e.g. "Click OK to apply"]
 
 Use SketchUp's UI::HtmlDialog. Keep the design simple and clean.
 Load it into SketchUp and test that the dialog opens correctly.
@@ -121,8 +121,8 @@ Load it into SketchUp and test that the dialog opens correctly.
 
 ```
 Add a toolbar to "[YOUR PLUGIN NAME]" with these buttons:
-- [Button 1 — e.g. "Draw Pipe — activates the pipe drawing tool"]
-- [Button 2 — e.g. "Settings — opens the settings dialog"]
+- [Button 1 -- e.g. "Draw Pipe -- activates the pipe drawing tool"]
+- [Button 2 -- e.g. "Settings -- opens the settings dialog"]
 
 Use simple icons (you can use colored rectangles or basic shapes for now).
 Load it into SketchUp and confirm the toolbar appears.
@@ -167,7 +167,7 @@ Please do a full check on "[YOUR PLUGIN NAME]":
 > Use when: You want to know how to do something specific in SketchUp.
 
 ```
-I want to [DESCRIBE — e.g. "change the color of a selected face to red"].
+I want to [DESCRIBE -- e.g. "change the color of a selected face to red"].
 What SketchUp Ruby API should I use? Show me a working example
 and run it in SketchUp to demonstrate.
 ```

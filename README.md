@@ -50,6 +50,7 @@ Copy `vbo_sk_agent.rb` and `vbo_sk_agent/` folder into your SketchUp Plugins dir
 | **Windsurf** | `.windsurfrules` | Automated |
 | **GitHub Copilot** | `.github/copilot-instructions.md` | Automated |
 | **Augment** | `AGENTS.md` | Automated |
+| **OpenAI Codex** | `AGENTS.md` | Automated |
 | **OpenClaw** | `OPENCLAW_INSTRUCTIONS.md` | Automated |
 | **Aider** | `.aider/instructions.md` | Automated |
 | **ChatGPT / Gemini Web** | Manual copy-paste | Manual |

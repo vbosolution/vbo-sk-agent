@@ -244,6 +244,17 @@ var AGENTS = {
     note: 'Augment reads <code>AGENTS.md</code>. Also supports <code>CLAUDE.md</code>.',
     type: 'auto'
   },
+  'codex': {
+    steps: [
+      'Click <strong>Toggle Bridge</strong> above',
+      'Open a terminal and cd into the Plugins folder: <div class="code-block">cd "<span class="cd-path">...</span>"</div><button class="btn-copy-code" onclick="copyCdCommand()">Copy command</button>',
+      'Launch Codex: <div class="code-block">codex</div>',
+      'Copy the <strong>setup prompt</strong> below and paste it into Codex',
+    ],
+    prompt: buildSetupPrompt('generic.md', 'AGENTS.md'),
+    note: 'Codex reads <code>AGENTS.md</code> from workspace root. Shared with Augment.',
+    type: 'auto'
+  },
   'claude-cli': {
     steps: [
       'Click <strong>Toggle Bridge</strong> above',

@@ -1,4 +1,4 @@
-# VBO SkAgent — SketchUp AI Bridge (Antigravity)
+# VBO SkAgent -- SketchUp AI Bridge (Antigravity)
 
 Use this as agent instructions in Antigravity IDE.
 
@@ -32,7 +32,7 @@ Optional envelope (first 2 lines of command.rb):
 
 ## Key Rules
 - Code runs in TOPLEVEL_BINDING (global scope, like Ruby Console)
-- Use `puts` for output — captured in result.json stdout field
+- Use `puts` for output -- captured in result.json stdout field
 - Wrap model modifications:
   ```ruby
   model = Sketchup.active_model
@@ -40,8 +40,8 @@ Optional envelope (first 2 lines of command.rb):
   # changes...
   model.commit_operation
   ```
-- NEVER nest operations — SketchUp crashes on nested start_operation
-- Full Plugins folder access — create, edit, load files freely
+- NEVER nest operations -- SketchUp crashes on nested start_operation
+- Full Plugins folder access -- create, edit, load files freely
 - API docs: https://ruby.sketchup.com/
 
 ## Common Patterns

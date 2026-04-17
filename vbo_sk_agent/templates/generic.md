@@ -1,4 +1,4 @@
-# VBO SkAgent — SketchUp AI Bridge
+# VBO SkAgent -- SketchUp AI Bridge
 
 Generic instructions for any AI tool.
 
@@ -28,7 +28,7 @@ When you write Ruby code to that file, SketchUp executes it and writes the resul
 ## Rules
 
 - Code runs in global scope (same as SketchUp Ruby Console)
-- Use `puts` to produce output — it gets captured in the stdout field
+- Use `puts` to produce output -- it gets captured in the stdout field
 - For model modifications, wrap in undo operation:
   ```ruby
   model = Sketchup.active_model

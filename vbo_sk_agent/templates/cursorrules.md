@@ -1,4 +1,4 @@
-# VBO SkAgent — SketchUp AI Bridge (Cursor Rules)
+# VBO SkAgent -- SketchUp AI Bridge (Cursor Rules)
 
 Copy this content into your `.cursorrules` file in the Plugins folder.
 
@@ -29,9 +29,9 @@ Optional envelope (first 2 lines of command.rb):
 
 ## Rules
 - Code runs in TOPLEVEL_BINDING (global scope, same as Ruby Console)
-- Use `puts` to output data — stdout is captured in result.json
+- Use `puts` to output data -- stdout is captured in result.json
 - Wrap model changes in `model.start_operation('Name', true)` / `model.commit_operation`
-- NEVER nest start_operation/commit_operation — SketchUp will crash
+- NEVER nest start_operation/commit_operation -- SketchUp will crash
 - You have full access to the Plugins folder for creating and editing files
 - SketchUp Ruby API: https://ruby.sketchup.com/
 

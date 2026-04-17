@@ -1,4 +1,4 @@
-# VBO SkAgent — SketchUp AI Bridge
+# VBO SkAgent -- SketchUp AI Bridge
 
 You have real-time access to SketchUp's Ruby environment via VBO SkAgent.
 
@@ -39,8 +39,8 @@ The `id` field helps match commands to results when running multiple commands.
 
 ## Important Rules
 
-- Code runs in `TOPLEVEL_BINDING` — same scope as SketchUp's Ruby Console
-- Use `puts` for output — stdout is captured in result.json
+- Code runs in `TOPLEVEL_BINDING` -- same scope as SketchUp's Ruby Console
+- Use `puts` for output -- stdout is captured in result.json
 - If you modify the model, wrap in `model.start_operation` / `commit_operation`:
   ```ruby
   model = Sketchup.active_model
@@ -48,9 +48,9 @@ The `id` field helps match commands to results when running multiple commands.
   # ... modify model ...
   model.commit_operation
   ```
-- **NEVER nest operations** — SketchUp will crash. Check if your code already wraps operations before adding another.
+- **NEVER nest operations** -- SketchUp will crash. Check if your code already wraps operations before adding another.
 - SketchUp Ruby API docs: https://ruby.sketchup.com/
-- You have full access to the Plugins folder — you can create, edit, and load plugin files
+- You have full access to the Plugins folder -- you can create, edit, and load plugin files
 
 ## Quick Examples
 
