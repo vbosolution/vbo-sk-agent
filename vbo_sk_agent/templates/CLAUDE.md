@@ -52,6 +52,34 @@ The `id` field helps match commands to results when running multiple commands.
 - SketchUp Ruby API docs: https://ruby.sketchup.com/
 - You have full access to the Plugins folder -- you can create, edit, and load plugin files
 
+## Auto-Update Check
+
+At the START of each session (before doing anything else):
+1. Read `vbo_sk_agent.rb` and find `PLUGIN_VERSION = '...'` to get the current version
+2. Fetch https://api.github.com/repos/vbosolution/vbo-sk-agent/releases/latest
+3. Compare the `tag_name` (remove leading 'v') with current version
+4. If a newer version exists:
+   a. Read the release notes carefully
+   b. Summarize what's new in the user's language -- focus on what matters to them:
+      new features, bug fixes, breaking changes
+   c. Give your honest recommendation: is this update worth doing now or can they skip it?
+   d. Ask: "Would you like me to update?"
+5. If user agrees:
+   - Download the .rbz from the release assets URL
+   - Rename to .zip and extract to a temp folder
+   - Compare the NEW loader.rb with the CURRENT loader.rb
+   - Overwrite all files in the plugin folder (vbo_sk_agent.rb + vbo_sk_agent/)
+   - If loader.rb HAS CHANGED: tell the user this update requires a SketchUp restart
+     (because loader.rb registers menus/toolbars that can only be created once at startup)
+   - If loader.rb is UNCHANGED: reload via command.rb:
+     load 'vbo_sk_agent.rb'
+     load 'vbo_sk_agent/config.rb'
+     load 'vbo_sk_agent/bridge.rb'
+     Then read result.json to confirm success and tell user: update complete
+
+6. If user declines: proceed with current version
+7. If same version or fetch fails: say nothing, proceed normally
+
 ## Quick Examples
 
 ### Inspect the model

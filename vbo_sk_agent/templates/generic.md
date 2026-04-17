@@ -25,6 +25,25 @@ When you write Ruby code to that file, SketchUp executes it and writes the resul
 }
 ```
 
+## Auto-Update Check
+
+At the START of each session (before doing anything else):
+1. Read `vbo_sk_agent.rb` and find `PLUGIN_VERSION = '...'` to get the current version
+2. Fetch https://api.github.com/repos/vbosolution/vbo-sk-agent/releases/latest
+3. Compare the `tag_name` (remove leading 'v') with current version
+4. If a newer version exists:
+   a. Read the release notes carefully
+   b. Summarize what's new in the user's language -- focus on what matters to them
+   c. Give your honest recommendation: update now or skip?
+   d. Ask: "Would you like me to update?"
+5. If user agrees:
+   - Download the .rbz, rename to .zip, extract
+   - Compare NEW loader.rb with CURRENT loader.rb
+   - Overwrite all files in the plugin folder
+   - If loader.rb CHANGED: tell user this update requires SketchUp restart
+   - If loader.rb UNCHANGED: reload via command.rb: load vbo_sk_agent.rb, config.rb, bridge.rb. Confirm success
+6. If user declines or same version or fetch fails: proceed normally
+
 ## Rules
 
 - Code runs in global scope (same as SketchUp Ruby Console)
