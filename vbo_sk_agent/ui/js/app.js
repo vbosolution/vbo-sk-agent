@@ -140,7 +140,7 @@ function buildSetupPrompt(srcFile, destFile) {
   return 'You are setting up VBO SkAgent — an AI bridge for SketchUp.\n\n'
     + 'Step 1 — Language: Ask the user what language they prefer to communicate in. '
     + 'Once they answer, YOU MUST switch to that language immediately and use it for ALL further communication.\n\n'
-    + 'Step 2 — Config file: Read the file "vbo_sk_agent/templates/' + srcFile + '". '
+    + 'Step 2 — Config file: Read the file "vbo_sk_agent/templates/' + srcFile + '" in vbo_sk_agent plugin. '
     + 'Translate its content into the user\'s chosen language, then save it as "' + destFile + '" at the root of this workspace. '
     + 'IMPORTANT: Add this line at the very top of the translated file:\n'
     + '"MANDATORY: Always use [LANGUAGE] for all communication, chat, plans, notes, session logs, and documentation. '
