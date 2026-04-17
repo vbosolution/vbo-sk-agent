@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VBO SkAgent</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><g fill="none" stroke="#008b8b" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M4.222 21.995v-3.55c0-1.271-.333-1.932-.987-3.037A8.888 8.888 0 0 1 10.889 2a8.89 8.89 0 0 1 8.889 8.887c0 .58 0 .87.024 1.032c.058.388.24.722.417 1.068L22 16.441l-1.4.7c-.405.202-.608.303-.749.49s-.181.399-.26.82l-.008.042c-.183.968-.384 2.036-.95 2.71c-.2.237-.448.43-.727.567c-.461.225-1.028.225-2.162.225c-.525 0-1.051.012-1.576 0c-1.243-.031-2.168-1.077-2.168-2.29"/><path d="M14.388 10.532c-.426 0-.815-.162-1.11-.427m1.11.426c0 1.146-.664 2.235-1.942 2.235S10.504 13.854 10.504 15m3.884-4.469c2.15 0 2.15-3.35 0-3.35q-.294.001-.557.095c.105-2.498-3.496-3.176-4.312-.836m.985 1.857c0-.774-.39-1.456-.985-1.857m0 0c-1.852-1.25-4.32.993-3.146 2.993c-1.97.295-1.76 3.333.247 3.333a1.66 1.66 0 0 0 1.362-.712"/></g></svg>
+      <h1>VBO SkAgent</h1>
+    </div>
+    <span class="version" id="version">v1.0.0</span>
+  </header>
+
+  <!-- Status + Toolbar -->
+  <section class="card status-card">
+    <div class="status-row">
+      <span class="badge disconnected" id="status-badge">Disconnected</span>
+      <div class="status-actions">
+        <button class="btn btn-primary" id="btn-toggle" onclick="toggleBridge()">Connect</button>
+        <button class="btn-toolbar" onclick="toggleConsole()" title="Toggle Ruby Console">
+          <svg width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5zM1.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5zM3 4l3.5 3L3 10l1 1l4.5-4L4 3zm5 7h5v1H8z"/></svg>
+        </button>
+        <button class="btn-toolbar" onclick="clearConsole()" title="Clear Ruby Console">
+          <svg width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1M2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8m8.354-2.354a.5.5 0 0 0-.708 0L8 7.293 6.354 5.646a.5.5 0 1 0-.708.708L7.293 8 5.646 9.646a.5.5 0 0 0 .708.708L8 8.707l1.646 1.647a.5.5 0 0 0 .708-.708L8.707 8l1.647-1.646a.5.5 0 0 0 0-.708"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Commands -->
+  <section class="card">
+    <h2>Recent Commands</h2>
+    <div id="history-list" class="history-list">
+      <p class="empty-state">No commands yet</p>
+    </div>
+  </section>
+
+  <!-- Quick Start (collapsible) -->
+  <section class="card">
+    <h3 class="collapse-title" onclick="toggleSection('sec-quickstart')">
+      <span class="setup-arrow" id="arrow-sec-quickstart">&#9654;</span> Quick Start — Connect Your AI
+    </h3>
+    <div class="collapse-content" id="sec-quickstart" style="display:none;">
+      <div class="agent-setup">
+        <label class="agent-label" for="agent-select">Select your AI tool:</label>
+        <select class="agent-select" id="agent-select" onchange="onAgentSelect()">
+          <optgroup label="IDE Agents">
+            <option value="antigravity">Google Antigravity</option>
+            <option value="claude-vscode">Claude Code for VS Code</option>
+            <option value="cursor">Cursor</option>
+            <option value="copilot">GitHub Copilot Chat</option>
+            <option value="windsurf">Windsurf</option>
+            <option value="augment">Augment</option>
+          </optgroup>
+          <optgroup label="CLI Agents">
+            <option value="claude-cli">Claude Code (Terminal)</option>
+            <option value="openclaw">OpenClaw</option>
+            <option value="aider">Aider</option>
+          </optgroup>
+          <optgroup label="Chat AI (manual)">
+            <option value="chatgpt">ChatGPT</option>
+            <option value="gemini-web">Gemini (web)</option>
+            <option value="other">Other</option>
+          </optgroup>
+        </select>
+        <div class="agent-steps" id="agent-steps"></div>
+        <div class="agent-prompt-section" id="agent-prompt-section" style="display:none;">
+          <p class="agent-prompt-label">Paste this into your AI:</p>
+          <div class="setup-prompt-box">
+            <pre class="setup-prompt" id="agent-prompt-text"></pre>
+            <button class="btn-copy-prompt" onclick="copySetupPrompt()">Copy Setup Prompt</button>
+          </div>
+        </div>
+        <div class="agent-manual-note" id="agent-manual-note" style="display:none;">
+          <p class="prompt-note">Chat AIs can't read/write files. You'll need to manually copy the template content and paste code into <code>command.rb</code> yourself.</p>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="openTemplates()">View Prompt Templates</button>
+      <a class="suggest-link" href="mailto:support@vbosolution.com?subject=VBO%20SkAgent%20—%20Agent%20Suggestion&body=Hi%2C%0A%0AMy%20AI%20tool%20is%20not%20in%20the%20list.%0A%0ATool%20name%3A%20%0AWebsite%3A%20%0A%0AThanks!">Can't find your AI tool? Suggest it to us</a>
+    </div>
+  </section>
+
+  <!-- Best Practices (collapsible) -->
+  <section class="card">
+    <h3 class="collapse-title" onclick="toggleSection('sec-bestpractices')">
+      <span class="setup-arrow" id="arrow-sec-bestpractices">&#9654;</span> Best Practices
+    </h3>
+    <div class="collapse-content" id="sec-bestpractices" style="display:none;">
+      <div class="practice">
+        <h3>1. Quick POC via command.rb</h3>
+        <p>For simple ideas, skip creating a full plugin — just prototype directly through the bridge:</p>
+        <div class="prompt-example">
+          <span class="prompt-label">Prompt</span>
+          <code>"I want a tool that selects all faces with area > 10m² and colors them red. Can you prototype this directly via command.rb first?"</code>
+        </div>
+        <p class="prompt-note">If it works, then ask AI to turn it into a proper plugin. If not, you saved time discovering it early.</p>
+      </div>
+      <div class="practice">
+        <h3>2. Develop your plugin normally</h3>
+        <p>Create your plugin files in the Plugins folder. Edit code with your AI assistant as usual.
+           The bridge is <em>not</em> where you write your plugin — it's for <strong>running and testing</strong> it.</p>
+      </div>
+      <div class="practice">
+        <h3>2. Reload after changes</h3>
+        <p>After editing plugin files, ask AI to reload them via the bridge:</p>
+        <div class="prompt-example">
+          <span class="prompt-label">Prompt</span>
+          <code>"Reload my_plugin/main.rb into SketchUp and show me any errors"</code>
+        </div>
+      </div>
+      <div class="practice">
+        <h3>3. Debug with confirmation</h3>
+        <p>For testing code that modifies the model, ask AI to show you the code first:</p>
+        <div class="prompt-example">
+          <span class="prompt-label">Prompt</span>
+          <code>"Test the draw_pipe method — show me the test code before running it"</code>
+        </div>
+      </div>
+      <div class="practice">
+        <h3>4. Auto-fix loop (with limits)</h3>
+        <p>Let AI fix bugs, but always set a retry limit:</p>
+        <div class="prompt-example">
+          <span class="prompt-label">Prompt</span>
+          <code>"Run this code in SketchUp. If it fails, read the error, fix it, and try again. Maximum 3 attempts — if still failing, stop and explain what's wrong instead of retrying."</code>
+        </div>
+        <p class="prompt-note">Always set a limit. Never let AI retry endlessly — it may corrupt your model.</p>
+      </div>
+      <div class="practice">
+        <h3>5. Inspect the model</h3>
+        <div class="prompt-example">
+          <span class="prompt-label">Prompt</span>
+          <code>"How many groups are in my model? What materials are used?"</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Assistant (collapsible) -->
+  <section class="card">
+    <h3 class="collapse-title" onclick="toggleSection('sec-assistant')">
+      <span class="setup-arrow" id="arrow-sec-assistant">&#9654;</span> Beyond Coding — Your AI Assistant
+    </h3>
+    <div class="collapse-content" id="sec-assistant" style="display:none;">
+      <p class="section-desc">SkAgent isn't just for plugin development. AI becomes a powerful assistant that can <em>act</em> on your model directly:</p>
+      <div class="usecase">
+        <h3>Generate reports</h3>
+        <div class="prompt-example"><span class="prompt-label">Prompt</span>
+          <code>"Create an HTML report of all selected groups/components with columns: name, bounding box dimensions, tag, and material. Display it in a SketchUp dialog (UI::HtmlDialog)."</code></div>
+      </div>
+      <div class="usecase">
+        <h3>Draw from reference images</h3>
+        <div class="prompt-example"><span class="prompt-label">Prompt</span>
+          <code>"Read this land survey image [attach file] and draw the plot shape in SketchUp. Move it near the origin."</code></div>
+      </div>
+      <div class="usecase">
+        <h3>Batch-edit scenes</h3>
+        <div class="prompt-example"><span class="prompt-label">Prompt</span>
+          <code>"Copy the camera angle from the current scene and apply it to all scenes whose name contains 'Plan'."</code></div>
+      </div>
+      <div class="usecase">
+        <h3>Translate entire model</h3>
+        <div class="prompt-example"><span class="prompt-label">Prompt</span>
+          <code>"Translate all text entities in this model (3D text, screen text, dimensions, labels) into Japanese."</code></div>
+        <p class="prompt-note">Hours of manual work for a human — seconds for AI with the bridge.</p>
+      </div>
+      <div class="usecase">
+        <h3>Model cleanup</h3>
+        <div class="prompt-example"><span class="prompt-label">Prompt</span>
+          <code>"Find all ungrouped edges and faces in the model, group them by proximity, and name each group."</code></div>
+      </div>
+      <p class="section-desc" style="margin-top:10px;">Anything you can do in SketchUp's Ruby Console, your AI can now do for you — but at a higher level. No code needed, just describe what you want in plain language.</p>
+    </div>
+  </section>
+
+  <!-- Beginner Guide (collapsible) -->
+  <section class="card">
+    <h3 class="collapse-title" onclick="toggleSection('sec-beginner')">
+      <span class="setup-arrow" id="arrow-sec-beginner">&#9654;</span> Beginner Guide — Build Your First Plugin
+    </h3>
+    <div class="collapse-content" id="sec-beginner" style="display:none;">
+      <p class="section-desc">Step-by-step prompts to build a plugin from scratch:</p>
+      <div class="guide-steps">
+        <div class="guide-step"><span class="step-num">1</span> Create a new plugin from scratch</div>
+        <div class="guide-step"><span class="step-num">2</span> Plan features &amp; break into phases</div>
+        <div class="guide-step"><span class="step-num">3</span> Build, test, and debug with AI</div>
+        <div class="guide-step"><span class="step-num">4</span> Add dialogs, toolbars, and polish</div>
+        <div class="guide-step"><span class="step-num">5</span> Package as .rbz and distribute</div>
+      </div>
+      <button class="btn btn-secondary" onclick="openTemplates()">Open Full Beginner Guide</button>
+    </div>
+  </section>
+
+  <!-- Sell Your Plugin (collapsible) -->
+  <section class="card">
+    <h3 class="collapse-title" onclick="toggleSection('sec-sell')">
+      <span class="setup-arrow" id="arrow-sec-sell">&#9654;</span> Sell Your Plugin — VBO Developer Program
+    </h3>
+    <div class="collapse-content" id="sec-sell" style="display:none;">
+      <p>Built something great? Sell your plugin to SketchUp users worldwide.</p>
+      <div class="sell-highlights">
+        <div class="sell-item"><span class="sell-icon">&#9733;</span> 85% revenue for you</div>
+        <div class="sell-item"><span class="sell-icon">&#9733;</span> License system included</div>
+        <div class="sell-item"><span class="sell-icon">&#9733;</span> Code encryption available</div>
+      </div>
+      <a class="btn btn-accent" href="mailto:support@vbosolution.com?subject=VBO%20Developer%20Program%20—%20Plugin%20Submission&body=Hi%20VBO%20Team%2C%0A%0AI%20built%20a%20SketchUp%20plugin%20and%20would%20like%20to%20sell%20it%20through%20the%20VBO%20Developer%20Program.%0A%0APlugin%20name%3A%20%0ADescription%3A%20%0A%0AThanks!">Contact: support@vbosolution.com</a>
+    </div>
+  </section>
+
+  <!-- Advanced (collapsible) — Paths + Settings -->
+  <section class="card">
+    <h3 class="collapse-title" onclick="toggleSection('sec-advanced')">
+      <span class="setup-arrow" id="arrow-sec-advanced">&#9654;</span> Advanced — Paths &amp; Settings
+    </h3>
+    <div class="collapse-content" id="sec-advanced" style="display:none;">
+      <h4 class="adv-sub">Paths</h4>
+      <div class="path-group">
+        <div class="path-row">
+          <span class="path-label">Plugins folder</span>
+          <div class="path-actions">
+            <button class="btn-icon" onclick="copyPath('plugins')" title="Copy path"><svg class="icon" width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M10 4V0H3L0 3v9h6v4h10V4zM3 1.414V3H1.414zM1 11V4h3V1h5v3L6 7v4zm8-5.586V7H7.414zM15 15H7V8h3V5h5z"/></svg></button>
+            <button class="btn-icon" onclick="openPluginsFolder()" title="Open folder"><svg class="icon" width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="m1 9.5l.826-3.717A1 1 0 0 1 2.802 5H13V4H7.125A1.125 1.125 0 0 1 6 2.875V2H1zm.247 3.5h11.95l1.556-7H2.803zM13 14H1a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.25a.75.75 0 0 1 .75.75v1.125c0 .069.056.125.125.125H13a1 1 0 0 1 1 1v1h.753a1 1 0 0 1 .977 1.217l-1.556 7a1 1 0 0 1-.976.783z"/></svg></button>
+          </div>
+        </div>
+        <code class="path-value" id="plugins-path">—</code>
+      </div>
+      <div class="path-group">
+        <div class="path-row">
+          <span class="path-label">command.rb</span>
+          <button class="btn-icon" onclick="copyPath('command')" title="Copy path"><svg class="icon" width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M10 4V0H3L0 3v9h6v4h10V4zM3 1.414V3H1.414zM1 11V4h3V1h5v3L6 7v4zm8-5.586V7H7.414zM15 15H7V8h3V5h5z"/></svg></button>
+        </div>
+        <code class="path-value" id="command-path">—</code>
+      </div>
+      <div class="path-group">
+        <div class="path-row">
+          <span class="path-label">result.json</span>
+          <button class="btn-icon" onclick="copyPath('result')" title="Copy path"><svg class="icon" width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M10 4V0H3L0 3v9h6v4h10V4zM3 1.414V3H1.414zM1 11V4h3V1h5v3L6 7v4zm8-5.586V7H7.414zM15 15H7V8h3V5h5z"/></svg></button>
+        </div>
+        <code class="path-value" id="result-path">—</code>
+      </div>
+
+      <h4 class="adv-sub">Settings</h4>
+      <label class="toggle-row">
+        <input type="checkbox" id="chk-safety" onchange="toggleSafety()">
+        <span>Safety Mode <small>— confirm before running AI code</small></span>
+      </label>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="card about-card">
+    <h2>About</h2>
+    <div class="about-author">
+      <img src="images/author.jpg" alt="Lê Việt Trường (Tiger Le)" class="author-avatar">
+      <div>
+        <strong class="author-name">Lê Việt Trường (Tiger Le)</strong>
+        <p class="author-role">SketchUp Plugin Developer &amp; AI Enthusiast</p>
+      </div>
+    </div>
+    <p class="about-desc">
+      <strong>VBO SkAgent</strong> is a free, open-source bridge that connects AI coding assistants
+      to SketchUp's Ruby environment. Built with love at VBO Solution.
+    </p>
+    <div class="about-links">
+      <a href="https://kcdallc.com/shop" target="_blank">Store</a>
+      <a href="https://extensions.sketchup.com/developer/ub5467bd8-c92b-415a-be5a-d92ca62c5b6b" target="_blank">Extension Warehouse</a>
+      <a href="https://github.com/vbosolution/vbo-sk-agent" target="_blank">GitHub</a>
+    </div>
+    <div class="about-contact">
+      <div class="contact-row"><span class="contact-label">Email</span> <a href="mailto:support@vbosolution.com">support@vbosolution.com</a></div>
+      <div class="contact-row"><span class="contact-label">Facebook</span> <a href="https://www.facebook.com/groups/VBOsolutions" target="_blank">VBO Solutions Group</a></div>
+      <div class="contact-row"><span class="contact-label">WhatsApp</span> <a href="https://wa.me/84916792711" target="_blank">+84 916 792 711</a></div>
+      <div class="contact-row"><span class="contact-label">Messenger</span> <a href="http://m.me/le.v.truong" target="_blank">m.me/le.v.truong</a></div>
+    </div>
+    <p class="about-license">MIT License &mdash; Free &amp; Open Source</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <a href="https://github.com/vbosolution/vbo-sk-agent" target="_blank">GitHub</a>
+    <span class="dot">·</span>
+    <a href="https://kcdallc.com/shop" target="_blank">VBO Store</a>
+  </footer>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

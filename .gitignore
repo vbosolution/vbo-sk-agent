@@ -1,0 +1,13 @@
+# Build artifacts
+*.rbz
+
+# Agent/session files (dev only)
+.agent/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
