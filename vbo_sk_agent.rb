@@ -1,7 +1,7 @@
 module VBO
   module SkAgent
     PLUGIN_NAME    = 'VBO SkAgent'.freeze
-    PLUGIN_VERSION = '1.0.1'.freeze
+    PLUGIN_VERSION = '1.1.0'.freeze
 
     unless file_loaded?(__FILE__)
       ex = SketchupExtension.new(PLUGIN_NAME, File.join(__dir__, 'vbo_sk_agent/loader'))
@@ -16,6 +16,19 @@ end
 file_loaded(__FILE__)
 
 # Release Notes
+#
+# v1.1.0 (2026-04-24)
+# - NEW: Skill System v1 -- 4 built-in skills loaded on startup
+#   * traverse_model (ruby): Recursive entity traversal, filter by type/depth/hidden
+#   * look (ruby): Vision capture (PNG + clipboard) + ray probe from pixel to entity
+#   * create_tool (agent): Guide for creating interactive tools (4 patterns + advanced)
+#   * create_dialog_form (agent): Guide for creating HtmlDialog forms with VBO UI library
+# - NEW: SkillsLoader auto-generates skills/SKILLS_INDEX.md on startup
+# - NEW: Research Protocol (REQUIRED) section in agent templates -- maps user intent
+#        to the correct skill README so the agent reads before coding
+# - NEW: Quick Start + Skills Are Composable sections in agent templates
+# - FIX: look skill -- handle entities without .name method (Face, Edge)
+# - FIX: agent templates -- corrected TraverseModel.run API signature example
 #
 # v1.0.1 (2026-04-17)
 # - Added OpenAI Codex support (AGENTS.md config)

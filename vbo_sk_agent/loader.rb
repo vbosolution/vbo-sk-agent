@@ -1,5 +1,6 @@
 Sketchup.require File.join(File.dirname(__FILE__), 'config')
 Sketchup.require File.join(File.dirname(__FILE__), 'bridge')
+Sketchup.require File.join(File.dirname(__FILE__), 'skills_loader')
 
 module VBO::SkAgent
   file = __FILE__
@@ -40,6 +41,9 @@ module VBO::SkAgent
     tb.add_item(cmd_dash)
 
     UI.start_timer(0.1, false) { tb.restore }
+
+    # --- Load Skills ---
+    UI.start_timer(0.5, false) { SkillsLoader.load_all }
 
     file_loaded(file)
   end

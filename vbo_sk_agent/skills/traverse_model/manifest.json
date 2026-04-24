@@ -1,0 +1,35 @@
+{
+  "$schema": "skagent-skill-v1",
+  "name": "traverse_model",
+  "display_name": "Model Traversal",
+  "version": "1.0.0",
+  "description": "Duyệt đệ quy entities trong selection — filter theo type/depth/hidden, trả về pid paths",
+  "author": { "name": "VBO Solution", "url": "https://vbosolution.com" },
+  "license": "free",
+  "runtime": "ruby",
+  "min_sketchup": "2024",
+  "min_skagent": "1.1.0",
+  "entry": "main.rb",
+  "dependencies": [],
+  "tags": ["model", "query", "traversal", "utility", "selection"],
+  "api": [
+    {
+      "method": "run",
+      "description": "Duyệt selection theo filter, trả về danh sách pid paths",
+      "safety": "query",
+      "params": {
+        "types":          { "type": "Array<String>", "required": false, "default": "all",   "description": "Entity types cần lọc, vd: ['Face', 'Edge', 'ComponentInstance']. nil = tất cả" },
+        "depth":          { "type": "Integer",       "required": false, "default": -1,      "description": "Max depth (-1 = unlimited)" },
+        "include_hidden": { "type": "Boolean",       "required": false, "default": false,   "description": "Include hidden/invisible entities" }
+      },
+      "returns": {
+        "type": "Hash",
+        "fields": {
+          "count":       "Integer — total entities found",
+          "entities":    "Array<Array<String>> — mỗi item là 1 pid path: [pid_ancestor, ..., pid_entity]",
+          "duration_ms": "Integer — thời gian chạy (ms)"
+        }
+      }
+    }
+  ]
+}

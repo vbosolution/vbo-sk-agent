@@ -1,0 +1,16 @@
+{
+  "$schema": "skagent-skill-v1",
+  "name": "create_dialog_form",
+  "display_name": "Create Dialog Form",
+  "version": "1.0.0",
+  "description": "Hướng dẫn tạo HtmlDialog form với VBO UI library — components, layout, callback pattern",
+  "author": { "name": "VBO Solution", "url": "https://vbosolution.com" },
+  "license": "free",
+  "runtime": "agent",
+  "min_sketchup": "2024",
+  "min_skagent": "1.1.0",
+  "entry": "README.md",
+  "dependencies": ["vbo_core"],
+  "tags": ["dialog", "form", "ui", "html", "guide"],
+  "api": []
+}

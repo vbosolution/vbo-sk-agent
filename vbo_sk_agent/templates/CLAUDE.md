@@ -80,6 +80,95 @@ At the START of each session (before doing anything else):
 6. If user declines: proceed with current version
 7. If same version or fetch fails: say nothing, proceed normally
 
+## Skills
+
+SkAgent has a skill system -- pre-built, tested Ruby modules and agent guides you can use instead of writing code from scratch. Two flavours:
+
+- **Ruby skills** -- call a module directly (e.g. `TraverseModel.run(...)`, `Look.run`)
+- **Agent skills** -- a README that teaches *you* the correct pattern before you write code (e.g. `create_tool`, `create_dialog_form`)
+
+The full list is at `vbo_sk_agent/skills/SKILLS_INDEX.md` (auto-generated on startup).
+
+## 🔍 Research Protocol (REQUIRED before writing Ruby)
+
+Match the user's task to an existing skill **before** writing any custom code:
+
+| If the user asks for...                      | READ this skill's README first                              |
+|----------------------------------------------|-------------------------------------------------------------|
+| Interactive tool (pick, draw, select, drag)  | `vbo_sk_agent/skills/create_tool/README.md`                 |
+| Dialog, form, settings panel, input UI       | `vbo_sk_agent/skills/create_dialog_form/README.md`          |
+| Count / filter / traverse entities           | Call `TraverseModel.run(...)` -- `skills/traverse_model/README.md` |
+| See the viewport / find what's at a pixel    | Call `Look.run` / `Look.probe` -- `skills/look/README.md`   |
+| No local skill matches                       | Check `skills/MARKETPLACE_CATALOG.md`. Still nothing → write custom. |
+
+**Skip the protocol only when** (1) the task is < 3 lines of trivial code, OR (2) the user explicitly says "write it from scratch, don't use skills".
+
+Example -- one call instead of 30 lines of recursive traversal:
+```ruby
+# Duyệt selection hiện tại, filter Face, không giới hạn depth
+result = TraverseModel.run(types: ['Face'], depth: -1, include_hidden: false)
+puts result.to_json
+```
+
+Skills are also usable as Ruby libraries by plugin developers (`require` the main.rb).
+
+**Marketplace**: when a missing skill would save significant effort, suggest it to the user -- explain what it does, show the code that would run with it installed, and always offer the option to write custom code instead.
+
+## 🚀 Quick Start -- Try the 4 Built-in Skills
+
+When the user asks something matching the patterns below, use the corresponding skill instead of writing code from scratch.
+
+**`traverse_model` -- read & count model contents:**
+- "How many ComponentInstance are in my selection?"
+- "List all Face in selection, group by material"
+- "Build a BOQ: count objects per layer"
+- "Find all Groups at depth >= 3"
+
+**`look` -- see the viewport (vision + ray probe):**
+- "Look at my viewport and tell me what's there" -- `Look.run(deep: false)` then attach capture.png
+- "What is at the center of my screen?" -- `Look.probe(px: 960, py: 540)`
+- "Probe 5 points along the diagonal to check continuity" -- `Look.probe_many(points: [...])`
+- "Capture the viewport and analyse it with vision"
+
+**`create_tool` -- build interactive tools (agent guide):**
+- "Make a tool that picks a face and measures its area"
+- "Make a tool that draws a polyline then follow-me extrudes a selected face"
+- "Make a rectangle selection tool in window mode"
+- "Make a hover-click tool that selects edges longer than 100cm"
+
+**`create_dialog_form` -- build HtmlDialog forms (agent guide):**
+- "Create a dialog to input pipe parameters: name, diameter, length"
+- "Create a settings form with 3 tabs: General, Display, Shortcuts"
+- "Create a toolbar panel with options for tool X"
+- "Create a BOQ dialog with a searchable table"
+
+For each prompt: (1) read the skill's README for the exact API, (2) call it from `command.rb`, (3) read `result.json` for the output.
+
+## 🧩 Skills Are Composable
+
+The real power is chaining multiple skills in one task. Three canonical patterns:
+
+**Pattern A -- Vision-driven Select** (pick entities by looking at them)
+1. `Look.run` -- capture viewport (PNG + context)
+2. Vision analysis -- "the red chair is near pixel (400, 300)"
+3. `Look.probe(px: 400, py: 300)` -- get the entity at that pixel
+4. Add returned entity to `model.selection`
+5. Repeat until all desired entities are selected
+
+**Pattern B -- Smart BOQ** (build a bill of quantities from natural language)
+1. `TraverseModel.run(types: ['Group', 'ComponentInstance'])` -- list all containers
+2. Aggregate: count per layer, per definition, sum bounds
+3. Follow the `create_dialog_form` guide to render a searchable BOQ table
+4. User can refine the query in chat -- re-run traverse, update dialog
+
+**Pattern C -- Build Custom Tool** (form-driven interactive tool)
+1. Follow `create_dialog_form` guide -- make a parameter form (e.g. diameter, spacing)
+2. Follow `create_tool` guide -- make a tool that reads those params
+3. Wire the dialog `submit` callback to `Sketchup.active_model.select_tool(MyTool.new(params))`
+4. User gets a complete workflow: fill form → pick points → geometry drawn
+
+When a task looks complex, ask: "can I split this into a probe + a traverse + a UI?" -- chaining often beats writing one big function.
+
 ## Quick Examples
 
 ### Inspect the model

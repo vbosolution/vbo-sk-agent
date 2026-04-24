@@ -1,0 +1,16 @@
+{
+  "$schema": "skagent-skill-v1",
+  "name": "create_tool",
+  "display_name": "Create Tool",
+  "version": "1.0.0",
+  "description": "Hướng dẫn tạo interactive tool cho SketchUp — 4 patterns cơ bản + 2 advanced evolution",
+  "author": { "name": "VBO Solution", "url": "https://vbosolution.com" },
+  "license": "free",
+  "runtime": "agent",
+  "min_sketchup": "2024",
+  "min_skagent": "1.1.0",
+  "entry": "README.md",
+  "dependencies": [],
+  "tags": ["tool", "interactive", "draw", "pick", "guide"],
+  "api": []
+}

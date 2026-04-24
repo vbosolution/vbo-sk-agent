@@ -1,0 +1,83 @@
+{
+  "$schema": "skagent-skill-v1",
+  "name": "look",
+  "display_name": "Look (Vision + Ray Probe)",
+  "version": "1.1.0",
+  "description": "Chụp viewport screenshot + extract context + bắn tia từ pixel để xác định entity trong model",
+  "author": { "name": "VBO Solution", "url": "https://vbosolution.com" },
+  "license": "free",
+  "runtime": "ruby",
+  "min_sketchup": "2024",
+  "min_skagent": "1.1.0",
+  "entry": "main.rb",
+  "dependencies": [],
+  "tags": ["vision", "screenshot", "capture", "context", "camera", "raytest", "probe"],
+  "api": [
+    {
+      "method": "run",
+      "description": "Chụp viewport + extract context data",
+      "safety": "query",
+      "params": {
+        "width":           { "type": "Integer", "required": false, "default": 1920,  "description": "Chiều rộng screenshot (px)" },
+        "height":          { "type": "Integer", "required": false, "default": 1080,  "description": "Chiều cao screenshot (px)" },
+        "include_context": { "type": "Boolean", "required": false, "default": true,  "description": "Bao gồm camera + entities metadata" },
+        "deep":            { "type": "Boolean", "required": false, "default": false, "description": "Scan sâu vào nested entities. false = chỉ top-level" }
+      },
+      "returns": {
+        "type": "Hash",
+        "fields": {
+          "screenshot":   "String — đường dẫn file capture.png",
+          "clipboard":    "Boolean — đã copy vào clipboard chưa",
+          "capture_size": "Array<Integer> — [width, height] của screenshot",
+          "context":      "Hash — { camera, selection_count, entities }",
+          "duration_ms":  "Integer — thời gian chạy (ms)"
+        }
+      }
+    },
+    {
+      "method": "probe",
+      "description": "Bắn tia từ pixel trên screenshot → xác định entity tại vị trí đó",
+      "safety": "query",
+      "params": {
+        "px":             { "type": "Integer", "required": true,  "description": "Pixel X trên screenshot" },
+        "py":             { "type": "Integer", "required": true,  "description": "Pixel Y trên screenshot" },
+        "capture_width":  { "type": "Integer", "required": false, "default": "auto", "description": "Override width của screenshot (mặc định lấy từ lần run() gần nhất)" },
+        "capture_height": { "type": "Integer", "required": false, "default": "auto", "description": "Override height của screenshot" }
+      },
+      "returns": {
+        "type": "Hash",
+        "fields": {
+          "hit":        "Boolean — có hit entity không",
+          "pixel":      "Array<Integer> — [px, py] input",
+          "point":      "Array<Float> — [x, y, z] world coords điểm chạm",
+          "distance":   "Float — khoảng cách từ camera",
+          "pid_path":   "Array<String> — instance path (persistent_ids)",
+          "entity":     "Hash — entity info (pid, type, name, layer, bounds...)",
+          "face_normal":"Array<Float> — normal nếu hit Face",
+          "snap":       "Hash — InputPoint snap info (tooltip, position, face_pid, edge_pid)"
+        }
+      }
+    },
+    {
+      "method": "probe_many",
+      "description": "Bắn nhiều tia cùng lúc + phân tích parent groups",
+      "safety": "query",
+      "params": {
+        "points":         { "type": "Array<Array<Integer>>", "required": true,  "description": "Mảng [[px1,py1], [px2,py2], ...] pixels trên screenshot" },
+        "capture_width":  { "type": "Integer", "required": false, "default": "auto", "description": "Override width" },
+        "capture_height": { "type": "Integer", "required": false, "default": "auto", "description": "Override height" }
+      },
+      "returns": {
+        "type": "Hash",
+        "fields": {
+          "count":         "Integer — tổng rays bắn",
+          "hits":          "Integer — số rays trúng",
+          "misses":        "Integer — số rays trượt",
+          "probes":        "Array<Hash> — kết quả từng probe",
+          "parent_groups": "Array<Hash> — group theo parent entity (phát hiện vật thể chưa group)",
+          "duration_ms":   "Integer — thời gian chạy (ms)"
+        }
+      }
+    }
+  ]
+}
