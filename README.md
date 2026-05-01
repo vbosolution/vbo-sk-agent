@@ -71,15 +71,36 @@ Anything you can do in SketchUp's Ruby Console, your AI can do for you — just 
 
 ## Features
 
-- **File-based bridge** — Simple, reliable, no network required
-- **Stdout capture** — `puts` output captured in result.json
+- **Two transports**:
+  - **MCP HTTP** (v1.2.0+) — Fast (~13ms), native Claude Code / Cursor support, 4 tools auto-discovered
+  - **File-based** — Universal fallback, works with any AI tool that can read/write files
+- **Stdout capture** — `puts` output captured automatically (StringIO + TracePoint + opt-in deep mode)
+- **Multi-instance aware** — Detects multiple SU windows running SkAgent; Dashboard warns + suggests correct port
 - **Safety mode** — Confirm before running AI-generated code (on by default)
 - **Session trust** — Trust once, run freely until bridge is toggled off
-- **Dashboard** — View status, paths, command history, and setup guides
+- **Dashboard** — Status, paths, command history, IDE setup tabs (Claude Code / Cursor / Gemini / Other)
 - **Multi-language** — Setup prompt auto-translates to your preferred language
 - **10+ AI tools supported** — Claude Code, Cursor, Antigravity, Windsurf, Copilot, and more
 - **Envelope protocol** — Optional structured commands with ID tracking
 - **SketchUp 2017+** compatible
+
+### MCP Transport (v1.2.0+)
+
+For IDEs that support MCP HTTP (Claude Code, Cursor):
+
+**Claude Code** (run once):
+```bash
+claude mcp add --transport http vbo-sketchup http://127.0.0.1:7891/mcp
+```
+
+**Cursor** (`.cursor/mcp.json`):
+```json
+{ "mcpServers": { "vbo-sketchup": { "url": "http://127.0.0.1:7891/mcp" } } }
+```
+
+After setup, 4 tools appear: `execute_ruby`, `reload_file`, `list_instances`, `get_console_output`.
+
+If port 7891 is occupied (multi-instance, firewall, antivirus), the server falls back to an ephemeral port — open the SkAgent Dashboard for the actual port number. Both transports run in parallel by default; users can pick a preferred mode in the Dashboard (`Auto` / `MCP only` / `File-based only`).
 
 ## Protocol
 

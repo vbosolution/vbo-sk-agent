@@ -7,6 +7,43 @@ Copy this content into your `.cursorrules` file in the Plugins folder.
 ## SketchUp Bridge Protocol
 
 You have real-time access to SketchUp's Ruby environment via VBO SkAgent.
+Two transports available: **MCP** (fast, ~13ms) and **file-based** (universal, ~500ms).
+
+### Transport Setup (v1.2.0+)
+
+Cursor supports MCP HTTP natively. To enable, add to `.cursor/mcp.json` (or `~/.cursor/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "vbo-sketchup": {
+      "url": "http://127.0.0.1:7891/mcp"
+    }
+  }
+}
+```
+
+After Cursor restarts, MCP tools appear: `execute_ruby`, `reload_file`, `list_instances`, `get_console_output`.
+
+At session start:
+1. Probe MCP via the tools (try `list_instances`) -- if it works, MCP is up
+2. If MCP fails or unconfigured -- fall back to file-based bridge below
+3. **Multi-instance check**: if `list_instances` returns `total > 1`, **WARN THE USER** before proceeding -- the connection may target the wrong SketchUp window
+
+---
+
+## A. MCP Transport (Primary, when configured)
+
+Use the 4 tools directly:
+- `execute_ruby(code, deep_capture?)` -- run Ruby, returns result + stdout + errors
+- `reload_file(file_path)` -- reload .rb (auto-bypasses `file_loaded?`)
+- `list_instances()` -- list all SU + multi-instance warning
+- `get_console_output(limit?)` -- recent background errors
+
+Output capture is automatic -- do not wrap with StringIO.
+
+---
+
+## B. File-based Transport (Fallback)
 
 To execute Ruby code in SketchUp:
 1. Write Ruby code to: `vbo_sk_agent/bridge/command.rb`

@@ -220,7 +220,7 @@ module VBO
       end
 
       def self.status_info
-        {
+        info = {
           watching: @watching,
           command_path: command_file_path,
           result_path: result_file_path,
@@ -231,6 +231,45 @@ module VBO
           version: PLUGIN_VERSION,
           sketchup_version: Sketchup.version,
         }
+
+        # MCP transport (v1.2.0+) — gắn vào status_info để Dashboard đọc
+        mcp_status = mcp_status_safe
+        info[:transport_mode] = Config.get('transport_mode')
+        info[:mcp]            = mcp_status
+        info[:instances]      = instances_summary_safe
+
+        info
+      end
+
+      # Helper: trạng thái MCP (an toàn nếu McpServer chưa load)
+      def self.mcp_status_safe
+        return { available: false } unless defined?(VBO::SkAgent::McpServer)
+        s = VBO::SkAgent::McpServer.status
+        s[:available] = true
+        s[:fallback_warning] = (s[:running] && !s[:using_preferred]) ?
+          "Port #{s[:preferred_port]} đang bị instance khác chiếm — đang chạy ephemeral #{s[:port]}." : nil
+        s
+      rescue => e
+        { available: false, error: e.message }
+      end
+
+      # Helper: tóm tắt multi-instance
+      def self.instances_summary_safe
+        return { total: 1, multi: false } unless defined?(VBO::SkAgent::Instances)
+        VBO::SkAgent::Instances.status_summary
+      rescue => e
+        { total: 1, multi: false, error: e.message }
+      end
+
+      # Bật/tắt MCP server (Dashboard callback)
+      def self.toggle_mcp
+        return false unless defined?(VBO::SkAgent::McpServer)
+        if VBO::SkAgent::McpServer.running
+          VBO::SkAgent::McpServer.stop
+        else
+          VBO::SkAgent::McpServer.start
+        end
+        true
       end
     end
   end

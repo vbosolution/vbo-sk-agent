@@ -1,4 +1,4 @@
-# VBO SkAgent -- SketchUp AI Bridge (Antigravity)
+# VBO SkAgent -- SketchUp AI Bridge (Antigravity / Gemini)
 
 Use this as agent instructions in Antigravity IDE.
 
@@ -7,6 +7,25 @@ Use this as agent instructions in Antigravity IDE.
 ## SketchUp Bridge Protocol
 
 You have real-time access to SketchUp's Ruby environment via VBO SkAgent.
+Two transports available: **MCP** (fast, ~13ms) and **file-based** (universal, ~500ms).
+
+### Transport selection (v1.2.0+)
+
+At session start, check MCP availability:
+```
+GET http://127.0.0.1:7891/health
+```
+- HTTP 200 with `"running": true` → use **MCP** (fetch POST `/mcp` with JSON-RPC)
+- Connection refused → use **File-based** (default for Antigravity, since Gemini does not yet have native MCP HTTP client)
+
+**Note:** Gemini / Antigravity do not currently support MCP HTTP transport natively. Use file-based bridge for reliability. If you have a way to make HTTP calls (custom tool), MCP is faster.
+
+### Multi-instance check (MCP only)
+After detecting MCP, list instances once. If `total > 1`, **WARN THE USER** before proceeding -- the connection may target the wrong SketchUp window.
+
+---
+
+## A. File-based Transport (Default for Antigravity)
 
 To execute Ruby code in SketchUp:
 1. Write Ruby code to: `vbo_sk_agent/bridge/command.rb`

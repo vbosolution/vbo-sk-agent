@@ -18,7 +18,9 @@
 
   <!-- Status + Toolbar -->
   <section class="card status-card">
+    <!-- File-based Bridge -->
     <div class="status-row">
+      <span class="status-label">File-based Bridge:</span>
       <span class="badge disconnected" id="status-badge">Disconnected</span>
       <div class="status-actions">
         <button class="btn btn-primary" id="btn-toggle" onclick="toggleBridge()">Connect</button>
@@ -29,6 +31,23 @@
           <svg width="14" height="14" viewBox="0 0 16 16"><path fill="currentColor" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1M2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8m8.354-2.354a.5.5 0 0 0-.708 0L8 7.293 6.354 5.646a.5.5 0 1 0-.708.708L7.293 8 5.646 9.646a.5.5 0 0 0 .708.708L8 8.707l1.646 1.647a.5.5 0 0 0 .708-.708L8.707 8l1.647-1.646a.5.5 0 0 0 0-.708"/></svg>
         </button>
       </div>
+    </div>
+    <!-- MCP Server (v1.2.0+) -->
+    <div class="status-row" id="mcp-row">
+      <span class="status-label">MCP Server:</span>
+      <span class="badge disconnected" id="mcp-badge">Stopped</span>
+      <span class="status-port" id="mcp-port-label" style="display:none;"></span>
+      <div class="status-actions">
+        <button class="btn btn-primary" id="btn-toggle-mcp" onclick="toggleMcp()">Start</button>
+      </div>
+    </div>
+    <!-- Multi-instance warning banner -->
+    <div class="warning-banner" id="multi-warning" style="display:none;">
+      <strong>⚠️  Multi-instance detected</strong>
+      <p id="multi-warning-text"></p>
+      <p class="warning-hint">Để agent kết nối instance này, copy command bên dưới rồi dán vào terminal:</p>
+      <div class="code-block" id="mcp-cmd-multi">—</div>
+      <button class="btn-copy-code" onclick="copyMcpCommand()">Copy command</button>
     </div>
   </section>
 
@@ -83,6 +102,67 @@
       </div>
       <button class="btn btn-secondary" onclick="openTemplates()">View Prompt Templates</button>
       <a class="suggest-link" href="mailto:support@vbosolution.com?subject=VBO%20SkAgent%20—%20Agent%20Suggestion&body=Hi%2C%0A%0AMy%20AI%20tool%20is%20not%20in%20the%20list.%0A%0ATool%20name%3A%20%0AWebsite%3A%20%0A%0AThanks!">Can't find your AI tool? Suggest it to us</a>
+    </div>
+  </section>
+
+  <!-- MCP Setup (collapsible) -->
+  <section class="card">
+    <h3 class="collapse-title" onclick="toggleSection('sec-mcp-setup')">
+      <span class="setup-arrow" id="arrow-sec-mcp-setup">&#9654;</span> MCP Fast Transport — Connect IDE
+    </h3>
+    <div class="collapse-content" id="sec-mcp-setup" style="display:none;">
+      <p class="section-desc">MCP transport runs ~30× faster than file-based bridge (P50 ≈ 13ms vs 500ms). Some IDEs support it natively.</p>
+
+      <!-- Transport mode + Port -->
+      <div class="mcp-config-row">
+        <label class="mcp-cfg-label">Transport mode:</label>
+        <select id="transport-mode-select" onchange="onTransportModeChange()">
+          <option value="auto">Auto (recommended)</option>
+          <option value="mcp_only">MCP only</option>
+          <option value="file_only">File-based only</option>
+        </select>
+      </div>
+      <div class="mcp-config-row">
+        <label class="mcp-cfg-label">Preferred port:</label>
+        <input type="number" id="mcp-port-input" min="1024" max="65535" value="7891" />
+        <button class="btn btn-secondary" onclick="onMcpPortApply()">Apply &amp; Restart</button>
+      </div>
+
+      <!-- IDE tabs -->
+      <div class="ide-tabs">
+        <button class="ide-tab active" data-tab="claude" onclick="selectIdeTab('claude')">Claude Code</button>
+        <button class="ide-tab" data-tab="cursor" onclick="selectIdeTab('cursor')">Cursor</button>
+        <button class="ide-tab" data-tab="gemini" onclick="selectIdeTab('gemini')">Gemini / Antigravity</button>
+        <button class="ide-tab" data-tab="generic" onclick="selectIdeTab('generic')">Other</button>
+      </div>
+
+      <div class="ide-pane" id="ide-pane-claude">
+        <p>Run this command once in your terminal (after MCP server is running):</p>
+        <div class="code-block" id="cmd-claude">claude mcp add --transport http vbo-sketchup http://127.0.0.1:7891/mcp</div>
+        <button class="btn-copy-code" onclick="copyIdeCmd('claude')">Copy command</button>
+        <p class="prompt-note">Claude Code will discover 4 tools: <code>execute_ruby</code>, <code>reload_file</code>, <code>list_instances</code>, <code>get_console_output</code>.</p>
+      </div>
+      <div class="ide-pane" id="ide-pane-cursor" style="display:none;">
+        <p>Add this to <code>.cursor/mcp.json</code> (or global <code>~/.cursor/mcp.json</code>):</p>
+        <div class="code-block" id="cmd-cursor">{
+  "mcpServers": {
+    "vbo-sketchup": {
+      "url": "http://127.0.0.1:7891/mcp"
+    }
+  }
+}</div>
+        <button class="btn-copy-code" onclick="copyIdeCmd('cursor')">Copy snippet</button>
+      </div>
+      <div class="ide-pane" id="ide-pane-gemini" style="display:none;">
+        <p>Gemini / Antigravity does not yet support MCP HTTP natively. Use file-based bridge or contact Google for MCP support.</p>
+        <p class="prompt-note">For now, set <strong>Transport mode = File-based only</strong> above and use <code>GEMINI.md</code> template.</p>
+      </div>
+      <div class="ide-pane" id="ide-pane-generic" style="display:none;">
+        <p>If your IDE supports MCP HTTP transport, point it to:</p>
+        <div class="code-block" id="cmd-generic">http://127.0.0.1:7891/mcp</div>
+        <button class="btn-copy-code" onclick="copyIdeCmd('generic')">Copy URL</button>
+        <p class="prompt-note">Otherwise use file-based bridge — works with any AI tool that can read/write files.</p>
+      </div>
     </div>
   </section>
 

@@ -4,10 +4,13 @@ Generic instructions for any AI tool.
 
 ## How It Works
 
-VBO SkAgent is a plugin running inside SketchUp that watches a file for changes.
-When you write Ruby code to that file, SketchUp executes it and writes the result.
+VBO SkAgent is a plugin running inside SketchUp that exposes Ruby execution via two transports:
+- **File-based** (this template): write to `command.rb`, read `result.json`. Works with ANY AI tool.
+- **MCP HTTP** (advanced): for IDEs that support it (Claude Code, Cursor). 30× faster (~13ms vs ~500ms).
 
-## Protocol
+This template uses **file-based** since it works universally. See README for MCP setup if your IDE supports it.
+
+## Protocol (File-based)
 
 1. **Write** Ruby code to: `vbo_sk_agent/bridge/command.rb`
 2. **Wait** ~1 second

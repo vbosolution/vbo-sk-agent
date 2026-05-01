@@ -886,3 +886,155 @@ footer a:hover {
   background: var(--border);
   border-radius: 3px;
 }
+
+/* ============================================================
+   MCP Transport (v1.2.0+)
+   ============================================================ */
+
+/* Override status-row: support label + badge + port + actions */
+.status-card .status-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.status-card .status-row:last-child {
+  margin-bottom: 0;
+}
+
+.status-card .status-actions {
+  margin-left: auto;
+}
+
+.status-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.status-port {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+.badge.warning {
+  background: rgba(250, 179, 135, 0.18);
+  color: #fab387;
+}
+
+/* Multi-instance warning banner */
+.warning-banner {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(243, 139, 168, 0.10);
+  border: 1px solid rgba(243, 139, 168, 0.35);
+  color: var(--text);
+}
+
+.warning-banner strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #f38ba8;
+  font-size: 13px;
+}
+
+.warning-banner p {
+  margin: 6px 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.warning-banner .warning-hint {
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.warning-banner .code-block {
+  margin: 6px 0;
+}
+
+/* MCP config rows */
+.mcp-config-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.mcp-cfg-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  min-width: 110px;
+}
+
+.mcp-config-row select,
+.mcp-config-row input[type="number"] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.mcp-config-row input[type="number"] {
+  width: 110px;
+}
+
+/* IDE tabs */
+.ide-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin: 16px 0 12px;
+  flex-wrap: wrap;
+}
+
+.ide-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.ide-tab:hover {
+  color: var(--text);
+}
+
+.ide-tab.active {
+  color: var(--accent, #008b8b);
+  border-bottom-color: var(--accent, #008b8b);
+}
+
+.ide-pane {
+  padding: 4px 0;
+}
+
+.ide-pane p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 6px 0;
+}
+
+.ide-pane .code-block {
+  white-space: pre;
+  overflow-x: auto;
+  margin: 8px 0;
+}

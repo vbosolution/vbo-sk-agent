@@ -54,8 +54,139 @@ function updateStatus(data) {
   var chkSafety = document.getElementById('chk-safety');
   if (chkSafety) chkSafety.checked = data.safety_mode;
 
+  // MCP transport (v1.2.0+)
+  renderMcp(data);
+
   // History
   renderHistory(data.history || []);
+}
+
+function renderMcp(data) {
+  var mcp = data.mcp || { available: false };
+  var instances = data.instances || { total: 1, multi: false };
+  var transportMode = data.transport_mode || 'auto';
+
+  // MCP badge + port
+  var mcpBadge = document.getElementById('mcp-badge');
+  var mcpPortLabel = document.getElementById('mcp-port-label');
+  var btnMcp = document.getElementById('btn-toggle-mcp');
+
+  if (mcpBadge) {
+    if (!mcp.available) {
+      mcpBadge.textContent = 'Unavailable';
+      mcpBadge.className = 'badge disconnected';
+    } else if (mcp.running) {
+      mcpBadge.textContent = mcp.using_preferred ? 'Running' : 'Running (fallback)';
+      mcpBadge.className = mcp.using_preferred ? 'badge connected' : 'badge warning';
+    } else {
+      mcpBadge.textContent = 'Stopped';
+      mcpBadge.className = 'badge disconnected';
+    }
+  }
+  if (mcpPortLabel) {
+    if (mcp.running && mcp.port) {
+      mcpPortLabel.textContent = 'port ' + mcp.port;
+      mcpPortLabel.style.display = 'inline-block';
+    } else {
+      mcpPortLabel.style.display = 'none';
+    }
+  }
+  if (btnMcp) {
+    btnMcp.textContent = mcp.running ? 'Stop' : 'Start';
+    btnMcp.disabled = !mcp.available;
+  }
+
+  // Multi-instance warning banner
+  var warn = document.getElementById('multi-warning');
+  var warnText = document.getElementById('multi-warning-text');
+  var cmdMulti = document.getElementById('mcp-cmd-multi');
+  if (warn && warnText) {
+    if (instances.multi) {
+      warn.style.display = 'block';
+      var others = (instances.others || []).length;
+      var port = mcp.port || mcp.preferred_port || 7891;
+      var msg = 'Có ' + instances.total + ' SketchUp instance đang chạy SkAgent. ' +
+                'Instance này dùng port ' + port + (mcp.using_preferred ? ' (preferred)' : ' (fallback ephemeral)') + '. ' +
+                (others > 0 ? others + ' instance khác có thể chiếm port preferred 7891.' : '');
+      warnText.textContent = msg;
+      if (cmdMulti) cmdMulti.textContent = 'claude mcp add --transport http vbo-sketchup http://127.0.0.1:' + port + '/mcp';
+    } else {
+      warn.style.display = 'none';
+    }
+  }
+
+  // Transport mode dropdown
+  var modeSel = document.getElementById('transport-mode-select');
+  if (modeSel && modeSel.value !== transportMode) modeSel.value = transportMode;
+
+  // Port input
+  var portInput = document.getElementById('mcp-port-input');
+  if (portInput && document.activeElement !== portInput) {
+    portInput.value = mcp.preferred_port || 7891;
+  }
+
+  // IDE setup commands — substitute current port
+  var port = (mcp.running ? mcp.port : (mcp.preferred_port || 7891)) || 7891;
+  var elClaude = document.getElementById('cmd-claude');
+  if (elClaude) elClaude.textContent = 'claude mcp add --transport http vbo-sketchup http://127.0.0.1:' + port + '/mcp';
+  var elCursor = document.getElementById('cmd-cursor');
+  if (elCursor) {
+    elCursor.textContent = '{\n  "mcpServers": {\n    "vbo-sketchup": {\n      "url": "http://127.0.0.1:' + port + '/mcp"\n    }\n  }\n}';
+  }
+  var elGeneric = document.getElementById('cmd-generic');
+  if (elGeneric) elGeneric.textContent = 'http://127.0.0.1:' + port + '/mcp';
+}
+
+function toggleMcp() {
+  if (typeof sketchup === 'undefined' || !sketchup.toggle_mcp) return;
+  sketchup.toggle_mcp();
+}
+
+function onTransportModeChange() {
+  var sel = document.getElementById('transport-mode-select');
+  if (!sel) return;
+  if (typeof sketchup !== 'undefined' && sketchup.set_transport_mode) {
+    sketchup.set_transport_mode(sel.value);
+  }
+}
+
+function onMcpPortApply() {
+  var input = document.getElementById('mcp-port-input');
+  if (!input) return;
+  var port = parseInt(input.value, 10);
+  if (isNaN(port) || port < 1024 || port > 65535) {
+    showToast('Port phải trong khoảng 1024-65535');
+    return;
+  }
+  if (typeof sketchup !== 'undefined' && sketchup.set_mcp_port) {
+    sketchup.set_mcp_port(port);
+  }
+}
+
+function selectIdeTab(name) {
+  var tabs = document.querySelectorAll('.ide-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab') === name);
+  }
+  var panes = ['claude', 'cursor', 'gemini', 'generic'];
+  for (var j = 0; j < panes.length; j++) {
+    var p = document.getElementById('ide-pane-' + panes[j]);
+    if (p) p.style.display = (panes[j] === name ? 'block' : 'none');
+  }
+}
+
+function copyIdeCmd(name) {
+  var el = document.getElementById('cmd-' + name);
+  if (!el) return;
+  copyToClipboard(el.textContent);
+  showToast('Copied!');
+}
+
+function copyMcpCommand() {
+  var el = document.getElementById('mcp-cmd-multi');
+  if (!el) return;
+  copyToClipboard(el.textContent);
+  showToast('Copied!');
 }
 
 function setPath(elementId, path) {

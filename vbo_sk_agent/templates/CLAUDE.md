@@ -1,8 +1,60 @@
 # VBO SkAgent -- SketchUp AI Bridge
 
 You have real-time access to SketchUp's Ruby environment via VBO SkAgent.
+Two transports are available: **MCP** (fast, P50 ~13ms) and **file-based** (universal, ~500ms).
 
-## Execute Code in SketchUp
+## Transport Layer -- Choose Once Per Session (v1.2.0+)
+
+At the START of each session, decide which transport to use:
+
+### Step 1: Check MCP availability
+```
+GET http://127.0.0.1:7891/health
+```
+- Returns JSON with `"ok": true` and `"running": true` --> use **MCP transport** (primary, fast)
+- Connection refused / error --> use **File-based transport** (fallback)
+
+If user has MCP registered in Claude Code (`claude mcp add ... vbo-sketchup`), the 4 tools below appear automatically as `mcp__vbo-sketchup__execute_ruby`, etc. Use them directly when available.
+
+Remember the chosen transport in this session -- do not re-check every call.
+
+### Step 2 (MCP only): Multi-instance check
+After MCP is detected, call `list_instances` ONCE at session start:
+- If `total == 1` --> proceed normally
+- If `total > 1` (multi-instance) --> **WARN THE USER**: there are N SketchUp instances running. The MCP connection may target the wrong instance. Show the `warning` field from the response. Ask the user to confirm which instance they want before proceeding.
+
+---
+
+## A. MCP Transport (Primary)
+
+When MCP is available, use these 4 tools directly:
+
+| Tool | When to use |
+|------|-------------|
+| `execute_ruby`     | Run any Ruby code in SU. Returns `result`, `output` (stdout), `error`, `backtrace`, `duration_ms` automatically |
+| `reload_file`      | Reload one .rb file (auto-bypasses `file_loaded?` guard) |
+| `list_instances`   | List all SU instances running SkAgent. Required at session start for multi-instance check |
+| `get_console_output` | Read background errors captured by TracePoint during prior `execute_ruby` calls |
+
+**Output capture is automatic** -- do not wrap with StringIO redirect.
+
+### Example (MCP)
+```
+execute_ruby:
+  code: |
+    model = Sketchup.active_model
+    puts "Title: #{model.title}"
+    puts "Entities: #{model.active_entities.length}"
+```
+Returns `output:` field with both lines.
+
+---
+
+## B. File-based Transport (Fallback)
+
+Used when MCP is unavailable (older SkAgent, port blocked, IDE without MCP support).
+
+### Execute Code in SketchUp (file-based)
 
 **Write** Ruby code to:
 `vbo_sk_agent/bridge/command.rb`
